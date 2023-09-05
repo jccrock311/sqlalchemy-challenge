@@ -39,3 +39,19 @@ app = Flask(__name__)
 @app.route('/')
 def home():
     
+    
+@app.route("/api/v1.0/precipiation")
+def precipitaion():
+    
+    
+@app.route("/api/v1.0/stations")
+def stations():
+    
+    
+@app.route("/api/v1.0/tobs")
+def active_stations:
+    
+    
+@app.route("/api/v1.0/temp/<start>")
+@app.route("/api/v1.0/temp/<start>/<end>")
+def temp_info:
