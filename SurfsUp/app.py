@@ -7,12 +7,13 @@ from sqlalchemy.ext.automap import automap_base
 import numpy as np
 import datetime as dt
 
+
 #################################################
 # Database/Flask Setup
 #################################################
 
+# Flask setup
 app = Flask(__name__)
-
 
 # create engine
 engine = create_engine("sqlite:///./Resources/hawaii.sqlite")
@@ -37,16 +38,15 @@ session = Session(engine)
 
 @app.route("/")
 def home():
-    pass
-    return (f"<h1> <b> The Hawaiian Climate App <b/></h1>"
+    return (f"<h1> <b> Hawaiian Climate App! <b/></h1>"
             f"<br/>"
             f"<ol>"
             f"<strong><h2> Routes: </h2></strong><br/>"
-            f"<li><h3>/api/v1.0/precipiation </h3><br/>"
-            f"<li><h3>/api/v1.0/stations </h3><br/>"
-            f"<li><h3>/api/v1.0/tobs </h3><br/>"
-            f"<li><h3>/api/v1.0/temp/start</h3><br/>"
-            f"<li><h3>/api/v1.0/temp/start/end</h3><br/>"
+            f"<li><h3> Precipitation </h3><br/>"
+            f"<li><h3> List of Stations </h3><br/>"
+            f"<li><h3> Most Active Station(s) </h3><br/>"
+            f"<li><h3> Temperature Details for Start Date </h3><br/>"
+            f"<li><h3> Temperature Details for Start AND End Dates </h3><br/>"
             f"<ol>"
             )
     
@@ -72,8 +72,7 @@ def precipitaion():
     return jsonify(last_year_prcp_list)
    
    
-   
-# List of stations  
+# List of all stations  
 @app.route("/api/v1.0/stations")
 
 def stations():
@@ -87,9 +86,9 @@ def stations():
     return jsonify (station_names)
     
     
-    
-# Most active stations
+# Filtering most active station
 @app.route("/api/v1.0/tobs")
+
 def active_stations():
     
     session = Session(engine)
@@ -97,10 +96,41 @@ def active_stations():
     result = session.query(measurement.tobs).filter(measurement.station == 'USC00519281').\
         filter(measurement.date >= last_year).all()
     
-# Return min, max, and avg for a specified start or start-end range 
-#@app.route("/api/v1.0/temp/<start>")
-#@app.route("/api/v1.0/temp/<start>/<end>")
-#def start_end_temps(start=None, end=None):
+    
+# Return min, max, avg for specified start/start-end ranges 
+@app.route("/api/v1.0/temp/<start>")
+@app.route("/api/v1.0/temp/<start>/<end>")
+
+def start_end_temps(start=None, end=None):
+    
+    min_max_avg = [func.min(measurement.tobs),  
+                   func.max(measurement.tobs),
+                   func.avg(measurement.tobs)]
+    
+    if not end:
+        
+        start = dt.datetime.strptime(start, "%Y%d%m")
+        
+        # Computes min, avg, max of start
+        results = session.query(*min_max_avg).filter(measurement.date >= start).all()
+        session.close()
+        
+        # Convert to list
+        temp = list(np.ravel(results))
+        return jsonify (temp)
+    
+      # Compute min, avg, max of start AND end date
+    start = dt.datetime.strptime(start, "%Y%d%m")
+    end = dt.datetime.strptime(end, "%Y%d%m")
+    
+    results = session.query(*min_max_avg).filter(measurement.date >= start).\
+                filter(measurement.date <= end).all()
+    session.close()
+    
+    # Convert to list
+    temp = list(np.ravel(results))
+    return jsonify(temp=temp)
+
 
 # for running the app
 if __name__ == "__main__":
