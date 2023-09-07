@@ -15,7 +15,7 @@ app = Flask(__name__)
 
 
 # create engine
-engine = create_engine("sqlite:///Resources/hawaii.sqlite")
+engine = create_engine("sqlite:///./Resources/hawaii.sqlite")
 
 # reflect an existing database into a new model
 Base = automap_base()
@@ -24,8 +24,8 @@ Base = automap_base()
 Base.prepare(engine, reflect=True)
 
 # Save references to each table
-measurement=Base.classes.measurement
-station=Base.classes.station
+measurement = Base.classes.measurement
+station = Base.classes.station
 
 # Create our session (link) from Python to the DB
 session = Session(engine)
@@ -37,6 +37,7 @@ session = Session(engine)
 
 @app.route("/")
 def home():
+    pass
     return (f"<h1> <b> The Hawaiian Climate App <b/></h1>"
             f"<br/>"
             f"<ol>"
@@ -48,11 +49,13 @@ def home():
             f"<li><h3>/api/v1.0/temp/start/end</h3><br/>"
             f"<ol>"
             )
-    pass
+    
     
 # Precipitation analysis:
 @app.route("/api/v1.0/precipiation")
+
 def precipitaion():
+    
     session = Session(engine)
     last_year = dt.date(2017,8,23) - dt.timedelta(days=365)
     results = session.query(measurement.date, measurement.prcp).\
@@ -69,15 +72,30 @@ def precipitaion():
     return jsonify(last_year_prcp_list)
    
    
+   
 # List of stations  
-#@app.route("/api/v1.0/stations")
-#def stations():
+@app.route("/api/v1.0/stations")
+
+def stations():
+    
+    session = Session(engine)
+    results = session.query(station.station).all()
+    session.close()
+    
+    station_names = list(np.ravel(results))
+    
+    return jsonify (station_names)
+    
     
     
 # Most active stations
-#@app.route("/api/v1.0/tobs")
-#def active_stations():
+@app.route("/api/v1.0/tobs")
+def active_stations():
     
+    session = Session(engine)
+    last_year = dt.date(2017,8,23) - dt.timedelta(days=365)
+    result = session.query(measurement.tobs).filter(measurement.station == 'USC00519281').\
+        filter(measurement.date >= last_year).all()
     
 # Return min, max, and avg for a specified start or start-end range 
 #@app.route("/api/v1.0/temp/<start>")
