@@ -81,8 +81,8 @@ def stations():
     results = session.query(station.station).all()
     session.close()
     
+    #Convert to list 
     station_names = list(np.ravel(results))
-    
     return jsonify (station_names)
     
     
