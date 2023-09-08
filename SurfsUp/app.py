@@ -42,11 +42,11 @@ def home():
             f"<br/>"
             f"<ol>"
             f"<strong><h2> Routes: </h2></strong><br/>"
-            f"<li><h3> Precipitation </h3><br/>"
-            f"<li><h3> List of Stations </h3><br/>"
-            f"<li><h3> Most Active Station(s) </h3><br/>"
-            f"<li><h3> Temperature Details for Start Date </h3><br/>"
-            f"<li><h3> Temperature Details for Start AND End Dates </h3><br/>"
+            f"<li><h3> Precipitation: /api/v1.0/precipiation </h3><br/>"
+            f"<li><h3> List of Stations: /api/v1.0/stations </h3><br/>"
+            f"<li><h3> Most Active Station(s): /api/v1.0/tobs </h3><br/>"
+            f"<li><h3> Temperature Details for Start Date: /api/v1.0/temp/<start> </h3><br/>"
+            f"<li><h3> Temperature Details for Start AND End Dates: /api/v1.0/temp/<start>/<end> </h3><br/>"
             f"<ol>"
             )
     
